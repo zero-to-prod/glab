@@ -1,0 +1,40 @@
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# GitHub workflows and configuration
+.github/
+
+# Development environment
+.devcontainer/
+.obsidian/
+
+# Documentation
+*.md
+docs/
+
+# Docker files
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile.*
+
+# Node modules (if any)
+node_modules/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test and coverage files
+coverage/
+*.test.js
+test/
+tests/

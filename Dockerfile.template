@@ -1,0 +1,50 @@
+FROM {{BASE_IMAGE}} AS builder
+
+WORKDIR /builder
+
+# Download and extract based on archive type
+# ARCHIVE_TYPE: {{ARCHIVE_TYPE}}
+# EXTRACT_PATH: {{EXTRACT_PATH}}
+
+RUN if [ "{{ARCHIVE_TYPE}}" = "binary" ]; then \
+        curl -LO "{{DOWNLOAD_URL}}" && \
+        mv $(basename "{{DOWNLOAD_URL}}") {{BINARY_NAME}} && \
+        chmod +x ./{{BINARY_NAME}}; \
+    elif [ "{{ARCHIVE_TYPE}}" = "tar.gz" ]; then \
+        curl -LO "{{DOWNLOAD_URL}}" && \
+        tar -xzf *.tar.gz && \
+        if [ -n "{{EXTRACT_PATH}}" ]; then \
+            chmod +x ./{{EXTRACT_PATH}} && \
+            mv ./{{EXTRACT_PATH}} ./{{BINARY_NAME}}; \
+        else \
+            chmod +x ./{{BINARY_NAME}}; \
+        fi; \
+    elif [ "{{ARCHIVE_TYPE}}" = "zip" ]; then \
+        apk add --no-cache unzip && \
+        curl -LO "{{DOWNLOAD_URL}}" && \
+        unzip -q *.zip && \
+        if [ -n "{{EXTRACT_PATH}}" ]; then \
+            chmod +x ./{{EXTRACT_PATH}} && \
+            mv ./{{EXTRACT_PATH}} ./{{BINARY_NAME}}; \
+        else \
+            chmod +x ./{{BINARY_NAME}}; \
+        fi; \
+    fi
+
+FROM {{RUNTIME_IMAGE}}
+
+WORKDIR /app
+
+LABEL org.opencontainers.image.title="{{CLI_TOOL_SHORTNAME}} - {{CLI_TOOL_DISPLAY_NAME}}"
+LABEL org.opencontainers.image.description="{{TOOL_DESCRIPTION}}"
+LABEL org.opencontainers.image.url="https://github.com/{{SOURCE_REPO}}"
+LABEL org.opencontainers.image.documentation="{{DOCS_URL}}"
+LABEL org.opencontainers.image.source="https://github.com/{{SOURCE_REPO}}"
+LABEL org.opencontainers.image.vendor="ZeroToProd"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL usage="docker run -it --rm -v ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}} {{DOCKER_IMAGE_NAME}} [COMMAND] [OPTIONS]"
+
+COPY --from=builder /builder/{{BINARY_NAME}} /usr/local/bin/{{BINARY_NAME}}
+
+ENTRYPOINT ["{{BINARY_NAME}}"]
+CMD ["--help"]

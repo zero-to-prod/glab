@@ -1,0 +1,8 @@
+services:
+  {{CLI_TOOL_NAME}}:
+    build: .
+    volumes:
+      - ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}}
+    working_dir: /app
+    entrypoint: ["{{BINARY_NAME}}"]
+    command: ["--help"]

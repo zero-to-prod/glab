@@ -1,0 +1,149 @@
+name: build_docker_image
+
+on:
+  workflow_run:
+    workflows: [ "release" ]
+    types:
+      - completed
+
+jobs:
+  build_docker_image:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Load configuration
+        id: config
+        run: |
+          # Extract repository name from GitHub context
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
+
+          # Try to load from package.json if it exists
+          if [ -f "package.json" ]; then
+            DESCRIPTION=$(jq -r '.description // ""' package.json)
+            [ -n "$DESCRIPTION" ] && echo "DESCRIPTION=$DESCRIPTION" >> $GITHUB_ENV
+          fi
+
+          # Try to extract from README.md if it exists
+          if [ -f "README.md" ]; then
+            # Extract first line after title as description
+            DESC_FROM_README=$(grep -m 1 "^>" README.md | sed 's/^> //' || grep -m 1 "^A " README.md | head -1 || echo "")
+            if [ -z "$DESCRIPTION" ] && [ -n "$DESC_FROM_README" ]; then
+              echo "DESCRIPTION=$DESC_FROM_README" >> $GITHUB_ENV
+            fi
+          fi
+
+          # Fallback description
+          if [ -z "$DESCRIPTION" ]; then
+            echo "DESCRIPTION=Docker-wrapped CLI tool" >> $GITHUB_ENV
+          fi
+
+          # Extract documentation URL from README if exists
+          DOCS_URL=$(grep -oP 'https?://[^\s\)]+' README.md | grep -E '(docs|documentation)' | head -1 || echo "")
+          [ -n "$DOCS_URL" ] && echo "DOCS_URL=$DOCS_URL" >> $GITHUB_ENV || echo "DOCS_URL=${{ github.event.repository.html_url }}" >> $GITHUB_ENV
+
+      - name: Get version
+        id: get_version
+        run: |
+          # Extract semantic version from the release workflow trigger
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          VERSION=${TAG#v}
+          MAJOR_MINOR=$(echo $VERSION | cut -d. -f1,2)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "MAJOR_MINOR=$MAJOR_MINOR" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        timeout-minutes: 1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        timeout-minutes: 1
+
+      - name: Build test image (amd64 only)
+        uses: docker/build-push-action@v6
+        timeout-minutes: 2
+        with:
+          context: .
+          platforms: linux/amd64
+          push: false
+          load: true
+          cache-from: type=gha
+          tags: ${{ env.REPO_NAME }}:test
+          labels: |
+            org.opencontainers.image.title=${{ github.event.repository.name }}
+            org.opencontainers.image.description=${{ env.DESCRIPTION }}
+            org.opencontainers.image.url=${{ github.event.repository.html_url }}
+            org.opencontainers.image.documentation=${{ env.DOCS_URL }}
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.version=${{ env.VERSION }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.repository.updated_at }}
+            org.opencontainers.image.vendor=${{ github.repository_owner }}
+            org.opencontainers.image.licenses=MIT
+
+      - name: Test image functionality
+        timeout-minutes: 1
+        run: |
+          echo "Testing image functionality..."
+          docker run --rm ${{ env.REPO_NAME }}:test --version || docker run --rm ${{ env.REPO_NAME }}:test --help || docker run --rm ${{ env.REPO_NAME }}:test version || true
+          echo "Image test completed"
+
+      - name: Scan for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        timeout-minutes: 2
+        with:
+          image-ref: '${{ env.REPO_NAME }}:test'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        timeout-minutes: 1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push multi-platform
+        uses: docker/build-push-action@v6
+        timeout-minutes: 3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:${{ env.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:${{ env.MAJOR_MINOR }}
+          labels: |
+            org.opencontainers.image.title=${{ github.event.repository.name }}
+            org.opencontainers.image.description=${{ env.DESCRIPTION }}
+            org.opencontainers.image.url=${{ github.event.repository.html_url }}
+            org.opencontainers.image.documentation=${{ env.DOCS_URL }}
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.version=${{ env.VERSION }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.repository.updated_at }}
+            org.opencontainers.image.vendor=${{ github.repository_owner }}
+            org.opencontainers.image.licenses=MIT
+
+      - name: Update Docker Hub description
+        if: success()
+        continue-on-error: true
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}
+          short-description: ${{ env.DESCRIPTION }}
+          readme-filepath: ./README.md

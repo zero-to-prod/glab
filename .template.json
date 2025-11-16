@@ -1,0 +1,109 @@
+{
+  "name": "cli-docker-wrapper-template",
+  "description": "A GitHub template for creating Docker-wrapped CLI tools",
+  "version": "2.0.0",
+  "variables": [
+    {
+      "key": "CLI_TOOL_NAME",
+      "description": "The name of the CLI tool (e.g., 'glab', 'terraform', 'kubectl')",
+      "example": "glab",
+      "required": true
+    },
+    {
+      "key": "CLI_TOOL_DISPLAY_NAME",
+      "description": "Display name of the CLI tool (e.g., 'GitLab CLI', 'Terraform CLI')",
+      "example": "GitLab CLI",
+      "required": true
+    },
+    {
+      "key": "CLI_TOOL_SHORTNAME",
+      "description": "Short name/acronym (e.g., 'GLAB', 'TF', 'AWS')",
+      "example": "GLAB",
+      "required": true
+    },
+    {
+      "key": "DOWNLOAD_URL",
+      "description": "URL to download the CLI binary",
+      "example": "https://gitlab.com/gitlab-org/cli/-/releases/v1.46.1/downloads/glab_1.46.1_Linux_x86_64.tar.gz",
+      "required": true
+    },
+    {
+      "key": "DOCKER_IMAGE_NAME",
+      "description": "Docker Hub image name (e.g., 'username/toolname')",
+      "example": "yourusername/glab",
+      "required": true
+    },
+    {
+      "key": "BINARY_NAME",
+      "description": "Name of the downloaded binary file",
+      "example": "glab",
+      "required": true
+    },
+    {
+      "key": "CONFIG_DIR_NAME",
+      "description": "Configuration directory name (relative to ~/.config/)",
+      "example": "glab",
+      "required": true
+    },
+    {
+      "key": "SOURCE_REPO",
+      "description": "Source code repository in format 'owner/repo' (works with GitHub, GitLab, etc.)",
+      "example": "yourusername/your-cli-wrapper",
+      "required": true
+    },
+    {
+      "key": "ARCHIVE_TYPE",
+      "description": "Download format: 'binary' (direct), 'tar.gz', or 'zip'",
+      "example": "binary",
+      "required": true
+    },
+    {
+      "key": "EXTRACT_PATH",
+      "description": "Path to binary within archive (empty for root or direct binary)",
+      "example": "bin/glab",
+      "required": false
+    },
+    {
+      "key": "DOCS_URL",
+      "description": "Official documentation URL for the CLI tool",
+      "example": "https://docs.gitlab.com/cli/",
+      "required": true
+    },
+    {
+      "key": "TOOL_DESCRIPTION",
+      "description": "Brief description of what the CLI tool does",
+      "example": "A lightweight, containerized wrapper for GitLab CLI that simplifies GitLab operations through Docker",
+      "required": true
+    },
+    {
+      "key": "AUTH_REQUIRED",
+      "description": "Does the tool require authentication? (true/false)",
+      "example": "true",
+      "required": true
+    },
+    {
+      "key": "AUTH_COMMAND",
+      "description": "Command to authenticate (if AUTH_REQUIRED is true)",
+      "example": "auth login",
+      "required": false
+    },
+    {
+      "key": "EXAMPLE_COMMAND",
+      "description": "Example command to demonstrate tool usage",
+      "example": "issue list",
+      "required": true
+    },
+    {
+      "key": "BASE_IMAGE",
+      "description": "Docker base image for the build stage",
+      "example": "alpine/curl:8.11.1",
+      "required": true
+    },
+    {
+      "key": "RUNTIME_IMAGE",
+      "description": "Docker runtime image",
+      "example": "alpine:3.21",
+      "required": true
+    }
+  ]
+}

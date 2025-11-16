@@ -1,0 +1,256 @@
+# {{CLI_TOOL_SHORTNAME}} - {{CLI_TOOL_DISPLAY_NAME}} Docker Wrapper
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/{{DOCKER_IMAGE_NAME}}?style=flat-square&logo=docker)](https://hub.docker.com/r/{{DOCKER_IMAGE_NAME}})
+[![Docker Image Size](https://img.shields.io/docker/image-size/{{DOCKER_IMAGE_NAME}}/latest?style=flat-square&logo=docker)](https://hub.docker.com/r/{{DOCKER_IMAGE_NAME}})
+[![GitHub License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE.md)
+[![GitHub Release](https://img.shields.io/github/v/release/{{SOURCE_REPO}}?style=flat-square)](https://github.com/{{SOURCE_REPO}}/releases)
+
+{{TOOL_DESCRIPTION}}
+
+> **Note**: Check the [official documentation]({{DOCS_URL}}) for the latest supported features and commands.
+
+## Contents
+
+- [Quick Start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Authentication Setup](#authentication-setup-required)
+  - [Environment Variables](#environment-variables)
+  - [Volume Mounts](#volume-mounts)
+- [Usage](#usage)
+  - [Basic Commands](#basic-command-structure)
+  - [Common Use Cases](#common-use-cases)
+  - [Shell Aliases](#creating-shell-aliases)
+- [Image Information](#image-information)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Quick Start
+
+### One-Line Install (Recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/{{SOURCE_REPO}}/main/install.sh | bash
+```
+
+### Manual Setup
+
+```bash
+# Pull the image
+docker pull {{DOCKER_IMAGE_NAME}}:latest
+
+{{#if AUTH_REQUIRED}}
+# Authenticate (one-time setup)
+docker run -it --rm -v ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}} {{DOCKER_IMAGE_NAME}} {{AUTH_COMMAND}}
+{{/if}}
+
+# Run a command (example)
+docker run -it --rm -v ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}} {{DOCKER_IMAGE_NAME}} {{EXAMPLE_COMMAND}}
+```
+
+### Creating Shell Aliases
+
+For convenience, create an alias in your shell configuration (`.bashrc`, `.zshrc`):
+
+```bash
+alias {{CLI_TOOL_NAME}}='docker run -it --rm -v ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}} -v $(pwd):/workspace -w /workspace {{DOCKER_IMAGE_NAME}}'
+```
+
+## Prerequisites
+
+Before using this Docker image, ensure you have:
+
+- **Docker**: Version 20.10+ or **Docker Desktop** (Windows/Mac)
+- **Docker Compose** (optional): Version 1.29+
+
+## Installation
+
+### Option 1: Using Docker Run (Recommended)
+
+Pull the latest image from Docker Hub:
+
+```bash
+docker pull {{DOCKER_IMAGE_NAME}}:latest
+```
+
+### Option 2: Using Docker Compose
+
+Create a `docker-compose.yml`:
+
+```yaml
+services:
+  {{CLI_TOOL_NAME}}:
+    image: {{DOCKER_IMAGE_NAME}}:latest
+    container_name: {{CLI_TOOL_NAME}}
+    volumes:
+      - ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}}
+    environment:
+      - TZ=UTC
+```
+
+Run with:
+```bash
+docker-compose run --rm {{CLI_TOOL_NAME}} --help
+```
+
+### Available Tags
+
+- `latest` - Current stable release (recommended)
+- `{X.Y.Z}` - Specific versions (e.g., `1.1.3`)
+- `{X.Y}` - Major.minor versions (e.g., `1.1`)
+
+## Configuration
+
+{{#if AUTH_REQUIRED}}
+### Authentication Setup (Required)
+
+{{CLI_TOOL_SHORTNAME}} requires authentication to connect to your instance.
+
+#### Step 1: Create Local Configuration
+
+Configure {{CLI_TOOL_SHORTNAME}} with your credentials:
+
+```bash
+docker run -it --rm -v ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}} {{DOCKER_IMAGE_NAME}} {{AUTH_COMMAND}}
+```
+
+Follow the interactive prompts to complete authentication.
+{{/if}}
+
+### Environment Variables
+
+Optional environment variables you can set:
+
+```bash
+docker run -it --rm \
+  -e TZ=UTC \
+  -v ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}} \
+  {{DOCKER_IMAGE_NAME}} [COMMAND]
+```
+
+### Volume Mounts
+
+**Essential volumes:**
+
+| Volume                                                        | Purpose                     | Required |
+|---------------------------------------------------------------|-----------------------------|----------|
+| `~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}}` | Configuration & credentials | Yes      |
+| `$(pwd):/workspace`                                           | Current directory access    | Optional |
+
+**Example with workspace mount:**
+
+```bash
+docker run -it --rm \
+  -v ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}} \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  {{DOCKER_IMAGE_NAME}} [COMMAND]
+```
+
+### Security Considerations
+
+- Configuration files are stored in `~/.config/{{CONFIG_DIR_NAME}}` on your host machine
+- Never commit `.config/{{CONFIG_DIR_NAME}}` to version control
+- Ensure file permissions are restrictive: `chmod 700 ~/.config/{{CONFIG_DIR_NAME}}`
+{{#if AUTH_REQUIRED}}
+- Use API tokens instead of passwords for authentication
+{{/if}}
+
+## Usage
+
+### Basic Command Structure
+
+```bash
+docker run -it --rm -v ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}} {{DOCKER_IMAGE_NAME}} [COMMAND] [OPTIONS]
+```
+
+### Quick Reference
+
+Display help:
+```bash
+# General help
+docker run -it --rm {{DOCKER_IMAGE_NAME}} --help
+
+# Command-specific help
+docker run -it --rm {{DOCKER_IMAGE_NAME}} [COMMAND] --help
+```
+
+### Common Use Cases
+
+**Example command:**
+```bash
+docker run -it --rm -v ~/.config/{{CONFIG_DIR_NAME}}:/root/.config/{{CONFIG_DIR_NAME}} {{DOCKER_IMAGE_NAME}} {{EXAMPLE_COMMAND}}
+```
+
+After adding the alias, restart your shell or run `source ~/.bashrc`. Then you can use:
+
+```bash
+{{CLI_TOOL_NAME}} {{EXAMPLE_COMMAND}}
+```
+
+### Using Docker Compose
+
+```bash
+# Run a command
+docker-compose run --rm {{CLI_TOOL_NAME}} {{EXAMPLE_COMMAND}}
+
+# Interactive mode
+docker-compose run --rm {{CLI_TOOL_NAME}}
+```
+
+## Image Information
+
+### Docker Hub
+
+- **Repository**: [{{DOCKER_IMAGE_NAME}}](https://hub.docker.com/r/{{DOCKER_IMAGE_NAME}})
+- **Pull Command**: `docker pull {{DOCKER_IMAGE_NAME}}`
+
+### Updating the Image
+
+```bash
+# Pull the latest version
+docker pull {{DOCKER_IMAGE_NAME}}:latest
+
+# Verify the update
+docker run --rm {{DOCKER_IMAGE_NAME}} --version
+```
+
+## Development
+
+For development or custom builds, see [Image Development](./IMAGE_DEVELOPMENT.md).
+
+### Project Links
+
+- **Source Repository**: [{{SOURCE_REPO}}](https://github.com/{{SOURCE_REPO}})
+- **Docker Hub**: [{{DOCKER_IMAGE_NAME}}](https://hub.docker.com/r/{{DOCKER_IMAGE_NAME}})
+- **Official Docs**: [Documentation]({{DOCS_URL}})
+
+## Contributing
+
+Contributions, issues, and feature requests are welcome!
+Feel free to check the [issues](https://github.com/{{SOURCE_REPO}}/issues) page if you want to contribute.
+
+Please read our:
+- [Contributing Guide](./CONTRIBUTING.md) - Contribution guidelines
+- [Code of Conduct](./CODE_OF_CONDUCT.md) - Community standards
+- [Security Policy](./SECURITY.md) - Vulnerability reporting
+
+### How to Contribute
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature-branch`)
+3. Make your changes
+4. Commit changes (`git commit -m 'Add some feature'`)
+5. Push to the branch (`git push origin feature-branch`)
+6. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see [LICENSE.md](./LICENSE.md) for details.
+
+---
+
+**Maintained by**: [ZeroToProd](https://github.com/zero-to-prod)
+**Last Updated**: {{CURRENT_DATE}}
