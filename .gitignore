@@ -9,9 +9,4 @@
 
 # Template backup files
 *.backup
-
-# Generated files (after running setup.sh)
-/Dockerfile
-/install.sh
-/docker-compose.yml
 /README.md.tmp

@@ -1,0 +1,9 @@
+services:
+  glab:
+    build: .
+    volumes:
+      - ~/.config/glab-cli:/root/.config/glab-cli
+      - .:/workspace
+    working_dir: /workspace
+    entrypoint: ["glab"]
+    command: ["--help"]
