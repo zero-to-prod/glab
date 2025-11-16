@@ -2,9 +2,9 @@
 
 set -eu
 
-# Usage: curl -fsSL https://raw.githubusercontent.com/zerotoprod/glab/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/zero-to-prod/glab/main/install.sh | bash
 
-DOCKER_IMAGE="zerotoprod/glab:latest"
+DOCKER_IMAGE="zero-to-prod/glab:latest"
 CONFIG_DIR="${HOME}/.config/glab-cli"
 
 RED='\033[0;31m'
@@ -54,7 +54,7 @@ fi
 echo -e "   ${GREEN}docker run --rm -v ~/.config/glab-cli:/root/.config/glab-cli -v \$(pwd):/workspace -w /workspace ${DOCKER_IMAGE} issue list${NC}"
 echo ""
 echo "Documentation:"
-echo "   - Source: https://github.com/zerotoprod/glab"
+echo "   - Source: https://github.com/zero-to-prod/glab"
 echo "   - Official Docs: https://gitlab.com/docs/editor_extensions/gitlab_cli/"
 echo ""
 echo "Alias for convenience (recommended):"

@@ -294,4 +294,4 @@ Issue Detected
 
 **Visual Guide Version**: 1.0.0
 **Last Updated**: 2025-11-16
-**Maintained by**: [ZeroToProd](https://github.com/zero-to-prod)
+**Maintained by**: [zero-to-prod](https://github.com/zero-to-prod)

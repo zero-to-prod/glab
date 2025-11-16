@@ -200,4 +200,4 @@ chmod 700 ~/.config/your-tool-name
 
 ---
 
-**Template by**: [ZeroToProd](https://github.com/zero-to-prod)
+**Template by**: [zero-to-prod](https://github.com/zero-to-prod)

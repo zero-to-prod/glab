@@ -79,7 +79,7 @@ Key variables:
 
 ## Maintenance
 
-This template is maintained by [ZeroToProd](https://github.com/zero-to-prod).
+This template is maintained by [zero-to-prod](https://github.com/zero-to-prod).
 
 ### Reporting Issues
 

@@ -32,7 +32,7 @@ A GitLab CLI tool bringing GitLab to your command line
 ### One-Line Install (Recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/zerotoprod/glab/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/zero-to-prod/glab/main/install.sh | bash
 ```
 
 ### Manual Setup
@@ -259,7 +259,7 @@ For development or custom builds, see [Image Development](./IMAGE_DEVELOPMENT.md
 ## Contributing
 
 Contributions, issues, and feature requests are welcome!
-Feel free to check the [issues](https://github.com/zerotoprod/glab/issues) page if you want to contribute.
+Feel free to check the [issues](https://github.com/zero-to-prod/glab/issues) page if you want to contribute.
 
 Please read our:
 - [Contributing Guide](./CONTRIBUTING.md) - Contribution guidelines
