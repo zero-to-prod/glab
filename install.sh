@@ -4,7 +4,7 @@ set -eu
 
 # Usage: curl -fsSL https://raw.githubusercontent.com/zero-to-prod/glab/main/install.sh | bash
 
-DOCKER_IMAGE="zero-to-prod/glab:latest"
+DOCKER_IMAGE="davidsmith3/glab:latest"
 CONFIG_DIR="${HOME}/.config/glab-cli"
 
 RED='\033[0;31m'
