@@ -34,6 +34,9 @@ A GitLab CLI tool bringing GitLab to your command line
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/zero-to-prod/glab/main/install.sh | bash
+
+# Get the LLM Guide
+curl https://raw.githubusercontent.com/zero-to-prod/glab/main/LLM_USAGE.md
 ```
 
 ### Manual Setup
