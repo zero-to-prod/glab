@@ -22,6 +22,7 @@ A GitLab CLI tool bringing GitLab to your command line
   - [Basic Commands](#basic-command-structure)
   - [Common Use Cases](#common-use-cases)
   - [Shell Aliases](#creating-shell-aliases)
+- [LLM/AI Assistant Usage](#llmai-assistant-usage)
 - [Image Information](#image-information)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -227,6 +228,45 @@ docker-compose run --rm glab issue list
 
 # Interactive mode
 docker-compose run --rm glab
+```
+
+## LLM/AI Assistant Usage
+
+This Docker wrapper includes comprehensive documentation for Large Language Models and AI assistants to help users interact with GitLab.
+
+### For AI Assistants
+
+A complete guide is available in [`LLM_USAGE.md`](./LLM_USAGE.md) which includes:
+
+- Complete command patterns with all required volume mounts
+- Common use cases and workflows
+- Error troubleshooting guide
+- Environment variable usage
+- Best practices for suggesting glab commands to users
+
+### Quick Access
+
+**View the LLM guide:**
+```bash
+curl https://raw.githubusercontent.com/zero-to-prod/glab/main/LLM_USAGE.md
+```
+
+### Key Points for AI Assistants
+
+When helping users with glab commands, always:
+1. Include both volume mounts: config (`~/.config/glab-cli`) and workspace (`$(pwd):/workspace`)
+2. Use `-it` only for interactive commands (like `auth login`)
+3. Verify user is in a git repository before suggesting repository commands
+4. Check authentication status before suggesting authenticated operations
+5. Suggest setting up the alias for frequent users
+
+Example complete command:
+```bash
+docker run --rm \
+  -v ~/.config/glab-cli:/root/.config/glab-cli \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  davidsmith3/glab issue list
 ```
 
 ## Image Information
