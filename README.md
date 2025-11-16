@@ -1,9 +1,9 @@
 # GLAB - GitLab CLI Docker Wrapper
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/zerotoprod/glab?style=flat-square&logo=docker)](https://hub.docker.com/r/zerotoprod/glab)
-[![Docker Image Size](https://img.shields.io/docker/image-size/zerotoprod/glab/latest?style=flat-square&logo=docker)](https://hub.docker.com/r/zerotoprod/glab)
+[![Docker Pulls](https://img.shields.io/docker/pulls/davidsmith3/glab?style=flat-square&logo=docker)](https://hub.docker.com/r/davidsmith3/glab)
+[![Docker Image Size](https://img.shields.io/docker/image-size/davidsmith3/glab/latest?style=flat-square&logo=docker)](https://hub.docker.com/r/davidsmith3/glab)
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE.md)
-[![GitHub Release](https://img.shields.io/github/v/release/zerotoprod/glab?style=flat-square)](https://github.com/zerotoprod/glab/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/zero-to-prod/glab?style=flat-square)](https://github.com/zero-to-prod/glab/releases)
 
 A GitLab CLI tool bringing GitLab to your command line
 
