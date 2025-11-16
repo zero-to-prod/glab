@@ -1,251 +1,285 @@
-# CLI Docker Wrapper Template
+# GLAB - GitLab CLI Docker Wrapper
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/zerotoprod/glab?style=flat-square&logo=docker)](https://hub.docker.com/r/zerotoprod/glab)
+[![Docker Image Size](https://img.shields.io/docker/image-size/zerotoprod/glab/latest?style=flat-square&logo=docker)](https://hub.docker.com/r/zerotoprod/glab)
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE.md)
-[![Template](https://img.shields.io/badge/template-Use%20this%20template-success?style=flat-square)](https://github.com/zero-to-prod/docker-wrapper-template/generate)
+[![GitHub Release](https://img.shields.io/github/v/release/zerotoprod/glab?style=flat-square)](https://github.com/zerotoprod/glab/releases)
 
-A production-ready GitHub template for creating Docker-wrapped CLI tools. Package any command-line tool in a container with automatic archive extraction, authentication support, and complete documentation.
+A GitLab CLI tool bringing GitLab to your command line
 
-## ✨ Features
+> **Note**: Check the [official documentation](https://gitlab.com/docs/editor_extensions/gitlab_cli/) for the latest supported features and commands.
 
-- 🚀 **5-Minute Setup** - Interactive script generates everything
-- 📦 **Archive Support** - Handles binary, tar.gz, and zip downloads
-- 🔐 **Authentication** - Optional auth configuration
-- 📝 **Complete Docs** - Auto-generated README and installation script
-- 🐳 **Docker Best Practices** - Minimal images, proper volume mounts
-- 🔧 **Flexible** - Works with 90%+ of CLI tools
+## Contents
 
-## 🎯 Supported Tools
+- [Quick Start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Authentication Setup](#authentication-setup-required)
+  - [Environment Variables](#environment-variables)
+  - [Volume Mounts](#volume-mounts)
+- [Usage](#usage)
+  - [Basic Commands](#basic-command-structure)
+  - [Common Use Cases](#common-use-cases)
+  - [Shell Aliases](#creating-shell-aliases)
+- [Image Information](#image-information)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
 
-This template works with hundreds of CLI tools including:
+## Quick Start
 
-- **GitLab CLI (glab)** - tar.gz with subdirectories
-- **Terraform** - zip archives
-- **kubectl** - direct binaries
-- **AWS CLI** - complex installations
-- **GitHub CLI (gh)** - tar.gz archives
-- **And many more!**
-
-See [EXAMPLE_TOOLS.md](./EXAMPLE_TOOLS.md) for complete configurations.
-
-## 🚀 Quick Start
-
-### Step 1: Use This Template
-
-Click **"Use this template"** above or visit:
-```
-https://github.com/zero-to-prod/docker-wrapper-template/generate
-```
-
-### Step 2: Run Setup
+### One-Line Install (Recommended)
 
 ```bash
-git clone https://github.com/yourusername/your-cli-wrapper.git
-cd your-cli-wrapper
-chmod +x setup.sh
-./setup.sh
+curl -fsSL https://raw.githubusercontent.com/zerotoprod/glab/main/install.sh | bash
 ```
 
-### Step 3: Answer Prompts
-
-The script will ask about your CLI tool:
-- Tool name and description
-- Download URL and format (binary/tar.gz/zip)
-- Authentication requirements
-- Docker configuration
-
-### Step 4: Build and Test
+### Manual Setup
 
 ```bash
-docker build -t your-image-name .
-docker run --rm your-image-name --help
+# Pull the image
+docker pull zerotoprod/glab:latest
+
+# Authenticate (one-time setup)
+docker run -it --rm -v ~/.config/glab-cli:/root/.config/glab-cli zerotoprod/glab auth login
+
+# Run a command (example - requires a git repository)
+docker run --rm -v ~/.config/glab-cli:/root/.config/glab-cli -v $(pwd):/workspace -w /workspace zerotoprod/glab issue list
 ```
 
-### Step 5: Share
+### Creating Shell Aliases
+
+For convenience, create an alias in your shell configuration (`.bashrc`, `.zshrc`):
 
 ```bash
-git add .
-git commit -m "Configure wrapper for [tool-name]"
-git push origin main
+alias glab='docker run --rm -v ~/.config/glab-cli:/root/.config/glab-cli -v $(pwd):/workspace -w /workspace zerotoprod/glab'
 ```
 
-## 📚 Documentation
+> **Note**: The alias omits `-it` flags to work in both interactive and non-interactive contexts. Add `-it` manually when needed for interactive commands like `auth login`.
 
-- **[QUICKSTART.md](./QUICKSTART.md)** - 5-minute quick start guide
-- **[TEMPLATE_USAGE.md](./TEMPLATE_USAGE.md)** - Complete usage guide
-- **[EXAMPLE_TOOLS.md](./EXAMPLE_TOOLS.md)** - 10+ pre-configured examples
-- **[IMPLEMENTATION_NOTES.md](./IMPLEMENTATION_NOTES.md)** - Technical details
+## Prerequisites
 
-## 🎨 What Gets Generated
+Before using this Docker image, ensure you have:
 
-After running `setup.sh`, you'll have:
+- **Docker**: Version 20.10+ or **Docker Desktop** (Windows/Mac)
+- **Docker Compose** (optional): Version 1.29+
 
-- ✅ **Dockerfile** - Multi-stage build with archive extraction
-- ✅ **install.sh** - One-line installer for end users
-- ✅ **docker-compose.yml** - Optional compose configuration
-- ✅ **README.md** - Complete documentation
-- ✅ **Working wrapper** - Ready to build and use
+## Installation
 
-## 🔧 Configuration Options
+### Option 1: Using Docker Run (Recommended)
 
-### Archive Type Support
-
-Choose from three formats:
-
-| Type | Example Tools | Extract |
-|------|--------------|---------|
-| **Binary** | kubectl, doctl | None needed |
-| **tar.gz** | glab, helm, gh | Automatic |
-| **zip** | terraform, aws | Automatic |
-
-### Authentication
-
-- Optional authentication setup
-- Configurable auth commands
-- Secure credential storage
-
-### Customization
-
-- Base image selection
-- Volume mount configuration
-- Environment variables
-- Custom documentation
-
-## 📖 Examples
-
-### Example 1: GitLab CLI (tar.gz)
+Pull the latest image from Docker Hub:
 
 ```bash
-./setup.sh
-# Select: glab, tar.gz, bin/glab
-# Result: Working GitLab CLI wrapper
+docker pull zerotoprod/glab:latest
 ```
 
-### Example 2: Terraform (zip)
+### Option 2: Using Docker Compose
+
+Create a `docker-compose.yml`:
+
+```yaml
+services:
+  glab:
+    image: zerotoprod/glab:latest
+    container_name: glab
+    volumes:
+      - ~/.config/glab-cli:/root/.config/glab-cli
+    environment:
+      - TZ=UTC
+```
+
+Run with:
+```bash
+docker-compose run --rm glab --help
+```
+
+### Available Tags
+
+- `latest` - Current stable release (recommended)
+- `{X.Y.Z}` - Specific versions (e.g., `1.1.3`)
+- `{X.Y}` - Major.minor versions (e.g., `1.1`)
+
+## Configuration
+
+### Authentication Setup (Required)
+
+GLAB requires authentication to connect to your instance.
+
+#### Step 1: Create Local Configuration
+
+Configure GLAB with your credentials:
 
 ```bash
-./setup.sh
-# Select: terraform, zip, (empty)
-# Result: Working Terraform wrapper
+docker run -it --rm -v ~/.config/glab-cli:/root/.config/glab-cli zerotoprod/glab auth login
 ```
 
-### Example 3: Direct Binary
+Follow the interactive prompts to complete authentication.
+
+### Environment Variables
+
+Optional environment variables you can set:
 
 ```bash
-./setup.sh
-# Select: kubectl, binary
-# Result: Working kubectl wrapper
+docker run --rm \
+  -e TZ=UTC \
+  -v ~/.config/glab-cli:/root/.config/glab-cli \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  zerotoprod/glab [COMMAND]
 ```
 
-## 🏗️ Project Structure
+> **Note**: Add `-it` flag for interactive commands like `auth login`.
 
+### Volume Mounts
+
+**Essential volumes:**
+
+| Volume                                                        | Purpose                     | Required |
+|---------------------------------------------------------------|-----------------------------|----------|
+| `~/.config/glab-cli:/root/.config/glab-cli` | Configuration & credentials | Yes      |
+| `$(pwd):/workspace`                                           | Current directory access    | Optional |
+
+**Example with workspace mount (recommended for most commands):**
+
+```bash
+docker run --rm \
+  -v ~/.config/glab-cli:/root/.config/glab-cli \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  zerotoprod/glab [COMMAND]
 ```
-.
-├── .template.json              # Configuration schema
-├── setup.sh                    # Interactive setup script
-├── Dockerfile.template         # Parameterized Docker build
-├── install.sh.template         # One-line installer template
-├── docker-compose.yml.template # Compose configuration
-├── README.md.template          # Documentation template
-├── QUICKSTART.md              # Quick start guide
-├── TEMPLATE_USAGE.md          # Complete usage guide
-├── EXAMPLE_TOOLS.md           # Pre-configured examples
-└── IMPLEMENTATION_NOTES.md    # Technical documentation
+
+Most glab commands require git repository context and should use the workspace mount pattern above.
+
+### Security Considerations
+
+- Configuration files are stored in `~/.config/glab-cli` on your host machine
+- Never commit `.config/glab-cli` to version control
+- Ensure file permissions are restrictive: `chmod 700 ~/.config/glab-cli`
+- Use API tokens instead of passwords for authentication
+
+## Usage
+
+### Basic Command Structure
+
+```bash
+# For commands that need git repository context
+docker run --rm \
+  -v ~/.config/glab-cli:/root/.config/glab-cli \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  zerotoprod/glab [COMMAND] [OPTIONS]
+
+# For interactive commands (like auth login)
+docker run -it --rm \
+  -v ~/.config/glab-cli:/root/.config/glab-cli \
+  zerotoprod/glab [COMMAND] [OPTIONS]
 ```
 
-## 🤝 Contributing
+### Quick Reference
 
-Contributions are welcome! Please read:
+Display help:
+```bash
+# General help
+docker run --rm zerotoprod/glab --help
 
-- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
-- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) - Community standards
-- [SECURITY.md](./SECURITY.md) - Security policy
+# Command-specific help
+docker run --rm zerotoprod/glab [COMMAND] --help
+```
+
+### Common Use Cases
+
+**Example commands:**
+```bash
+# List issues in current repository
+docker run --rm \
+  -v ~/.config/glab-cli:/root/.config/glab-cli \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  zerotoprod/glab issue list
+
+# View repository information
+docker run --rm \
+  -v ~/.config/glab-cli:/root/.config/glab-cli \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  zerotoprod/glab repo view
+```
+
+After adding the alias (see [Creating Shell Aliases](#creating-shell-aliases)), restart your shell or run `source ~/.bashrc`. Then you can use:
+
+```bash
+# Use the alias for simpler commands
+glab issue list
+glab repo view
+
+# For interactive commands, add -it manually
+docker run -it --rm -v ~/.config/glab-cli:/root/.config/glab-cli zerotoprod/glab auth login
+```
+
+### Using Docker Compose
+
+```bash
+# Run a command
+docker-compose run --rm glab issue list
+
+# Interactive mode
+docker-compose run --rm glab
+```
+
+## Image Information
+
+### Docker Hub
+
+- **Repository**: [zerotoprod/glab](https://hub.docker.com/r/zerotoprod/glab)
+- **Pull Command**: `docker pull zerotoprod/glab`
+
+### Updating the Image
+
+```bash
+# Pull the latest version
+docker pull zerotoprod/glab:latest
+
+# Verify the update
+docker run --rm zerotoprod/glab --version
+```
+
+## Development
+
+For development or custom builds, see [Image Development](./IMAGE_DEVELOPMENT.md).
+
+### Project Links
+
+- **Source Repository**: [zerotoprod/glab](https://github.com/zerotoprod/glab)
+- **Docker Hub**: [zerotoprod/glab](https://hub.docker.com/r/zerotoprod/glab)
+- **Official Docs**: [Documentation](https://gitlab.com/docs/editor_extensions/gitlab_cli/)
+
+## Contributing
+
+Contributions, issues, and feature requests are welcome!
+Feel free to check the [issues](https://github.com/zerotoprod/glab/issues) page if you want to contribute.
+
+Please read our:
+- [Contributing Guide](./CONTRIBUTING.md) - Contribution guidelines
+- [Code of Conduct](./CODE_OF_CONDUCT.md) - Community standards
+- [Security Policy](./SECURITY.md) - Vulnerability reporting
 
 ### How to Contribute
 
 1. Fork the repository
-2. Create a feature branch
+2. Create a new branch (`git checkout -b feature-branch`)
 3. Make your changes
-4. Test with multiple CLI tools
-5. Submit a pull request
+4. Commit changes (`git commit -m 'Add some feature'`)
+5. Push to the branch (`git push origin feature-branch`)
+6. Create a Pull Request
 
-### Adding Examples
-
-Have a working configuration? Add it to [EXAMPLE_TOOLS.md](./EXAMPLE_TOOLS.md)!
-
-## 📋 Requirements
-
-- **Docker** 20.10+ or Docker Desktop
-- **Git** (for cloning)
-- **Bash** (for setup script)
-
-## 🔍 How It Works
-
-1. **Setup Script** prompts for configuration
-2. **Template Files** contain `{{VARIABLE}}` placeholders
-3. **Variable Substitution** replaces all placeholders
-4. **Conditional Logic** handles different archive types
-5. **Cleanup** removes template files
-6. **Result** is a working, documented CLI wrapper
-
-## 🎓 Learn More
-
-- [Template Usage Guide](./TEMPLATE_USAGE.md) - Detailed instructions
-- [Example Configurations](./EXAMPLE_TOOLS.md) - Real-world examples
-- [Quick Start Guide](./QUICKSTART.md) - Get started in 5 minutes
-- [Implementation Notes](./IMPLEMENTATION_NOTES.md) - Technical deep dive
-
-## 🐛 Troubleshooting
-
-### Setup Issues
-
-**Permission denied:**
-```bash
-chmod +x setup.sh
-./setup.sh
-```
-
-**Build fails:**
-- Check download URL is correct
-- Verify archive type selection
-- Review extract path if using archives
-
-**Tool requires dependencies:**
-- Edit generated Dockerfile
-- Add required packages with `RUN apk add`
-
-See [TEMPLATE_USAGE.md](./TEMPLATE_USAGE.md) for more troubleshooting.
-
-## 📊 Success Rate
-
-- **Before**: 40% of CLI tools (direct binaries only)
-- **After**: 90%+ of CLI tools (all common formats)
-
-## 🌟 Use Cases
-
-- **CLI Tool Maintainers** - Provide Docker distribution
-- **DevOps Teams** - Standardize tool deployment
-- **Open Source Projects** - Offer containerized versions
-- **Enterprise** - Internal tool distribution
-- **Education** - Teaching Docker and CLI tools
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see [LICENSE.md](./LICENSE.md) for details.
-
-## 🙏 Acknowledgments
-
-- Inspired by the need for standardized CLI distribution
-- Built to support the Docker and CLI tool communities
-- Validated with real-world tools (glab, terraform, kubectl, etc.)
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/zero-to-prod/docker-wrapper-template/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/zero-to-prod/docker-wrapper-template/discussions)
-- **Documentation**: See guides above
 
 ---
 
 **Maintained by**: [ZeroToProd](https://github.com/zero-to-prod)
-
-**Ready to create your CLI wrapper?** Click "Use this template" above! 🚀
+**Last Updated**: 2025-11-16
