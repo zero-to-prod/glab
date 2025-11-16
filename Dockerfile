@@ -39,12 +39,12 @@ WORKDIR /app
 
 LABEL org.opencontainers.image.title="GLAB - GitLab CLI"
 LABEL org.opencontainers.image.description="A GitLab CLI tool bringing GitLab to your command line"
-LABEL org.opencontainers.image.url="https://github.com/zerotoprod/glab"
+LABEL org.opencontainers.image.url="https://github.com/zero-to-prod/glab"
 LABEL org.opencontainers.image.documentation="https://gitlab.com/docs/editor_extensions/gitlab_cli/"
-LABEL org.opencontainers.image.source="https://github.com/zerotoprod/glab"
-LABEL org.opencontainers.image.vendor="ZeroToProd"
+LABEL org.opencontainers.image.source="https://github.com/zero-to-prod/glab"
+LABEL org.opencontainers.image.vendor="zero-to-prod"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL usage="docker run --rm -v ~/.config/glab-cli:/root/.config/glab-cli -v \$(pwd):/workspace -w /workspace zerotoprod/glab [COMMAND] [OPTIONS]"
+LABEL usage="docker run --rm -v ~/.config/glab-cli:/root/.config/glab-cli -v \$(pwd):/workspace -w /workspace davidsmith3/glab [COMMAND] [OPTIONS]"
 
 COPY --from=builder /builder/glab /usr/local/bin/glab
 
