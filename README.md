@@ -5,7 +5,14 @@
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE.md)
 [![GitHub Release](https://img.shields.io/github/v/release/zero-to-prod/glab?style=flat-square)](https://github.com/zero-to-prod/glab/releases)
 
-A GitLab CLI tool bringing GitLab to your command line
+Use it to download MRs and interact with GitLab from the command line.
+
+Using this wrapper:
+- Provides an alternative to MCP: reducing time and consuming fewer tokens
+- Zero-configuration global installation
+- Does not require special instructions for LLMs to use since it's just a CLI
+- Use it to compose powerful scripts without the need for an MCP integration
+- More complete feature set than the GitLab API
 
 > **Note**: Check the [official documentation](https://gitlab.com/docs/editor_extensions/gitlab_cli/) for the latest supported features and commands.
 
