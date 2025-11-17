@@ -30,13 +30,42 @@ A GitLab CLI tool bringing GitLab to your command line
 
 ## Quick Start
 
-### One-Line Install (Recommended)
+1. One-Line Install (Recommended)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/zero-to-prod/glab/main/install.sh | bash
+```
 
-# Get the LLM Guide
-curl https://raw.githubusercontent.com/zero-to-prod/glab/main/LLM_USAGE.md
+2. Login
+
+```bash
+docker run -it --rm -v ~/.config/glab-cli:/root/.config/glab-cli davidsmith3/glab:latest auth login
+```
+
+3. Run a command
+
+Open a terminal in a GitLab repository directory and run this to list merge requests:
+
+```bash
+docker run -it --rm -v ~/.config/glab-cli:/root/.config/glab-cli davidsmith3/glab:latest mr list
+```
+
+4. Alias (Recommended)
+
+Since this package is a Docker wrapper, an LLM should need no specific instructions to use the underlying CLI.
+
+Adding an alias makes the wrapper transparent, allowing it to be used naturally.
+
+```bash
+alias glab='docker run --rm -v ~/.config/glab-cli:/root/.config/glab-cli -v $(pwd):/workspace -w /workspace davidsmith3/glab'
+```
+
+5. Run Directly (Optional)
+
+Use this to run in non-interactive contexts such as CI/CD pipelines, scripts, or other automation.
+
+```shell
+docker run --rm -v ~/.config/glab-cli:/root/.config/glab-cli -v $(pwd):/workspace -w /workspace davidsmith3/glab:latest [COMMAND] [OPTIONS]
 ```
 
 ### Manual Setup
