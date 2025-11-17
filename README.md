@@ -12,7 +12,7 @@ Using this wrapper:
 - Zero-configuration global installation
 - Does not require special instructions for LLMs to use since it's just a CLI
 - Use it to compose powerful scripts without the need for an MCP integration
-- More complete feature set than the GitLab API
+- More complete feature set than the GitLab MCP
 
 > **Note**: Check the [official documentation](https://gitlab.com/docs/editor_extensions/gitlab_cli/) for the latest supported features and commands.
 
